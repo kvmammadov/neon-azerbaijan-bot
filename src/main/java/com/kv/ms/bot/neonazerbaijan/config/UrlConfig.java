@@ -8,9 +8,16 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 public class UrlConfig {
 
-    @Value("${url.instagram.get-post-ids}")
-    private String postIds;
+    @Value("${url.instagram.get-latest-post-details}")
+    private String latestPostDetails;
 
-    @Value("${url.instagram.get-post-details}")
-    private String postDetails;
+    @Value("${url.instagram.get-all-posts-details}")
+    private String allPostsDetails;
+
+
+    @Value("${url.telegram.send-photo}")
+    private String sendPhoto;
+
+//    @Value("${url.instagram.get-post-details}")
+//    private String postDetails;
 }

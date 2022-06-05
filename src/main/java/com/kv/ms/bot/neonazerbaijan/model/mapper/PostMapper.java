@@ -14,8 +14,8 @@ public interface PostMapper {
     PostMapper INSTANCE = Mappers.getMapper(PostMapper.class);
 
     @Mappings({
-            @Mapping(target = "post_id", source = "id"),
-            @Mapping(target = "profile_id", constant = "5022499404471247"),
+            @Mapping(target = "postId", source = "id"),
+            @Mapping(target = "profileId", constant = "5362713430462517")
     })
     PostEntity toEntity(String id);
 }

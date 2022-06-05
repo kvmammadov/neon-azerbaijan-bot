@@ -14,4 +14,8 @@ public class ApplicationProperty {
     private String fields;
     @Value("${instagram.access-token}")
     private String accessToken;
+    @Value("${telegram.chat-id}")
+    private String chatId;
+    @Value("${telegram.token}")
+    private String telegramToken;
 }

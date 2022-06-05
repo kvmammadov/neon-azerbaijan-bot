@@ -3,13 +3,20 @@ server:
 
 url:
   instagram:
-    get-post-ids: https://graph.instagram.com/%s/media?access_token=%s
-    get-post-details: https://graph.instagram.com/%s/media?access_token=%s
+    get-latest-post-details: https://graph.instagram.com/%s/media?fields=%s&access_token=%s&limit=1
+    get-all-posts-details: https://graph.instagram.com/%s/media?fields=%s&access_token=%s&limit=100
+  telegram:
+    send-photo: https://api.telegram.org/bot%s/sendPhoto
+#    get-post-details: https://graph.instagram.com/%s/media?access_token=%s
 
 instagram:
-  profile-id: 5022499404471247
-  fields: fields,id,caption,media_type,media_url,timestamp
-  access-token: IGQVJYWHJ1Y3gxSHFuUWNRbEtzRXNUOWs4NFJTTEJvbXRISExaeFNJY0ZAycmprTm1oeXdadGEzR1ZAaaHFodTIzRE9sMXo5R1BXakNMVGJsUno2eXc4RWFRSjA2Q1dob0RlMk1HdFJmY2s2OHBzX3pwegZDZD
+  profile-id: 5362713430462517
+  fields: id,media_type,media_url,caption,timestamp
+  access-token: IGQVJWNEJZASGs3Q2gtSzRQdEpkWm9VTHBYelh3NWpvTC1DTUpBcWxlLTRHMWJGZAVlHQ3Y5cWhxOVRQNkZAGTFp5Qm1lWEZAlbnJKcTAtdm4tOVNnSWk5R1diNTFja3FBa3ZAONWk3R1ZALS251N2ZAEeUNQZAgZDZD
+
+telegram:
+  chat-id: -1001428237886 #-605409547
+  token: 5376848163:AAEMtLZJ4xzE4-TUSNJU-vxe56RSOifkvrc
 
 spring:
   jpa:
@@ -22,5 +29,4 @@ spring:
     url: jdbc:postgresql://localhost:5432/neonazerbaijandb
     username: postgres
     password: root
-    #    password: 12345
     driverClassName: org.postgresql.Driver

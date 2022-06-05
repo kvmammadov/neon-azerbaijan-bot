@@ -6,8 +6,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PostRepository extends JpaRepository<PostEntity, Long> {
+public interface PostsRepository extends JpaRepository<PostEntity, Long> {
 
-    @Query(nativeQuery = true, value = "SELECT p.post_id FROM POSTS p WHERE p.published = false and ROW = 1 order by p.post_id desc")
+//    Boolean findByPostId(String postId);
+
+    Boolean existsByPostId(String postId);
+
+    PostEntity findByPostId(String postId);
+
+    @Query(nativeQuery = true,
+            value = "SELECT * FROM POSTS p WHERE p.is_published = FALSE ORDER BY p.id DESC LIMIT 1")
     PostEntity findLastPostIdWherePublishedIsFalse();
 }

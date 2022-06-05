@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class PostIdsResponse {
+public class PostIdResponse {
 
     private List<Data> data;
     private Paging paging;
