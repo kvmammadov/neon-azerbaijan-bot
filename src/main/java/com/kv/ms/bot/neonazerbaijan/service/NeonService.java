@@ -2,6 +2,7 @@ package com.kv.ms.bot.neonazerbaijan.service;
 
 import com.kv.ms.bot.neonazerbaijan.client.InstagramClient;
 import com.kv.ms.bot.neonazerbaijan.client.TelegramClient;
+import com.kv.ms.bot.neonazerbaijan.client.response.PostIdResponse;
 import com.kv.ms.bot.neonazerbaijan.dao.entity.PostEntity;
 import com.kv.ms.bot.neonazerbaijan.dao.repository.PostsRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class NeonService {
     private final PostsRepository postsRepository;
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private Date lastPublishingDate;
+    private Integer counter = 0;
 
     {
         try {
@@ -63,15 +65,17 @@ public class NeonService {
                 postsRepository.save(archivedPost.setIsPublished(true));
             }
             lastPublishingDate = sdf.parse(currentDate);
-        }
-        else logger.info("Last post publish time is {}", lastPublishingDate);
+        } else logger.info("Last post publish time is {}", lastPublishingDate);
     }
 
-    public void fillTable() {
+    public void fillTable(String next) {
 
-        var response = instagramClient.getNextPostId();
-        var nextValue = response.getPaging().getNext();
+        if (next == null) {
+            System.out.println(counter);
+            return;
+        }
 
+        var response = instagramClient.getNextPostId(next);
         response.getData().forEach(
                 data -> {
                     postsRepository.save(new PostEntity()
@@ -80,18 +84,17 @@ public class NeonService {
                             .setMediaUrl(data.getMediaUrl())
                             .setCaption(data.getCaption())
                             .setProfileId("5362713430462517"));
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+//                    try {
+                    counter++;
+//                        Thread.sleep(1000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
                 }
         );
 
-        System.out.println(nextValue);
-    }
-
-    public PostEntity getFromDb(String id) {
-        return postsRepository.findByPostId(id);
+        next = response.getPaging().getNext();
+        System.out.println(next);
+        fillTable(next);
     }
 }

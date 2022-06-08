@@ -45,4 +45,16 @@ public class InstagramClient {
         logger.info("RESPONSE from instagram-api: {}", response);
         return response;
     }
+
+    public PostIdResponse getNextPostId(String nextValue) {
+
+        logger.info("GET request to {}", nextValue);
+
+        var response = restClient.getForObject(
+                nextValue,
+                PostIdResponse.class
+        );
+        logger.info("RESPONSE from instagram-api: {}", response);
+        return response;
+    }
 }
