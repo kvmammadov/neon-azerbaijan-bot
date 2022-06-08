@@ -1,9 +1,11 @@
 package com.kv.ms.bot.neonazerbaijan.dao.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.w3c.dom.Text;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -46,14 +48,15 @@ public class PostEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public static PostEntity of(String postId, String mediaType, String mediaUrl,
-                                String caption, Boolean isPublished, String profileId) {
-        return new PostEntity()
-                .setPostId(postId)
-                .setMediaType(mediaType)
-                .setMediaUrl(mediaUrl)
-                .setCaption(caption)
-                .setProfileId(profileId)
-                .setIsPublished(isPublished);
-    }
 }
+//    public static PostEntity of(String postId, String mediaType, String mediaUrl,
+//                                String caption, Boolean isPublished, String profileId) {
+//        return new PostEntity()
+//                .setPostId(postId)
+//                .setMediaType(mediaType)
+//                .setMediaUrl(mediaUrl)
+//                .setCaption(caption)
+//                .setProfileId(profileId)
+//                .setIsPublished(isPublished);
+//    }
+

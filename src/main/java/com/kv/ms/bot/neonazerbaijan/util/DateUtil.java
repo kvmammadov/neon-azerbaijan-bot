@@ -12,9 +12,9 @@ public class DateUtil {
     private final static long MILLIS_PER_N_HOURS = 60 * 60 * 1000L;
     public static Date lastPublishingDate;
 
-    {
+    static {
         try {
-            String lastPublishingDate_OLD = "2022-06-06 00:00:59";
+            String lastPublishingDate_OLD = "2022-06-07 10:00:59";
             lastPublishingDate = sdf.parse(lastPublishingDate_OLD);
         } catch (ParseException e) {
             e.printStackTrace();
@@ -23,12 +23,14 @@ public class DateUtil {
 
     @SneakyThrows
     public static boolean isMoreThanNHours(Long n) {
-        String currentDate = sdf.format(new Date());
-        Date currentDateTime = sdf.parse(currentDate);
-
         var HOURS = MILLIS_PER_N_HOURS * n;
-
-        lastPublishingDate = currentDateTime;
-        return Math.abs(currentDateTime.getTime() - lastPublishingDate.getTime()) > HOURS;
+        return Math.abs(getCurrentDate().getTime() - lastPublishingDate.getTime()) > HOURS;
     }
+
+    @SneakyThrows
+    public static Date getCurrentDate() {
+        String currentDate = sdf.format(new Date());
+        return sdf.parse(currentDate);
+    }
+
 }

@@ -4,7 +4,7 @@ import static com.kv.ms.bot.neonazerbaijan.model.consts.ErrorMessages.ALL_POSTS_
 
 public class AllPostsIsPublishedException extends Throwable {
 
-    public AllPostsIsPublishedException(String message) {
+    public AllPostsIsPublishedException() {
         super(ALL_POSTS_ARE_PUBLISHED);
     }
 }

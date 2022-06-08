@@ -15,9 +15,9 @@ public interface PostMapper {
     PostMapper INSTANCE = Mappers.getMapper(PostMapper.class);
 
     @Mappings({
-            @Mapping(target = "postId", source = "id"),
-            @Mapping(target = "isPublished", constant = "true"),
-            @Mapping(target = "profileId", constant = "5362713430462517")
+            @Mapping(target = "postId", source = "data.id"),
+            @Mapping(target = "isPublished", source = "isPublished"),
+            @Mapping(target = "profileId", source = "profileId")
     })
-    PostEntity toEntity(Data data);
+    PostEntity toEntity(Data data, Boolean isPublished, String profileId);
 }
