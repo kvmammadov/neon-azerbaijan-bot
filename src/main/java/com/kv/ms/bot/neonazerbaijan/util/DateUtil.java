@@ -32,5 +32,4 @@ public class DateUtil {
         String currentDate = sdf.format(new Date());
         return sdf.parse(currentDate);
     }
-
 }

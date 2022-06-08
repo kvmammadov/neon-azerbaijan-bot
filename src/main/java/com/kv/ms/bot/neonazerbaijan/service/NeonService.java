@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import static com.kv.ms.bot.neonazerbaijan.model.consts.MediaTypes.VIDEO;
 import static com.kv.ms.bot.neonazerbaijan.util.DateUtil.getCurrentDate;
 import static com.kv.ms.bot.neonazerbaijan.util.DateUtil.isMoreThanNHours;
 
@@ -28,21 +29,27 @@ public class NeonService {
     private final ApplicationProperty applicationProperty;
     private Integer counter = 0;
 
-    //check every 1 hour
     @Scheduled(cron = "@hourly")
     @SneakyThrows
     public void publishPost() {
 
         var postDetails = instagramClient.getLatestPostId().getData().get(0);
         var postId = postDetails.getId();
+        var mediaType = postDetails.getMediaType();
 
         checkTheLastPostIdExistInDb(postDetails);
 
         if (isMoreThanNHours(3L)) { //TODO may me refactor code
             DateUtil.lastPublishingDate = getCurrentDate();
+
             if (!postsRepository.existsByPostId(postId)) {
                 logger.info("Post cannot be find in DB");
-                telegramClient.sendMedia(postDetails.getMediaUrl(), postDetails.getCaption());
+
+                if (mediaType.equalsIgnoreCase(VIDEO))
+                    telegramClient.sendVideo(postDetails.getMediaUrl(), postDetails.getCaption());
+                else
+                    telegramClient.sendPhoto(postDetails.getMediaUrl(), postDetails.getCaption());
+
                 postsRepository.save(PostMapper.INSTANCE.toEntity(
                         postDetails,
                         true,
@@ -54,8 +61,13 @@ public class NeonService {
 
             var archivedPost = postsRepository.findLastPostIdWherePublishedIsFalse()
                     .orElseThrow(AllPostsIsPublishedException::new);
+            mediaType = archivedPost.getMediaType();
 
-            telegramClient.sendMedia(archivedPost.getMediaUrl(), archivedPost.getCaption());
+            if (mediaType.equalsIgnoreCase(VIDEO))
+                telegramClient.sendVideo(archivedPost.getMediaUrl(), archivedPost.getCaption());
+            else
+                telegramClient.sendPhoto(archivedPost.getMediaUrl(), archivedPost.getCaption());
+
             postsRepository.save(archivedPost.setIsPublished(true));
         }
         logger.info("Last post publish time is {}", DateUtil.lastPublishingDate);

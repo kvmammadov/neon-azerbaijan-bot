@@ -18,6 +18,9 @@ public class UrlConfig {
     @Value("${url.telegram.send-photo}")
     private String sendPhoto;
 
+    @Value("${url.telegram.send-video}")
+    private String sendVideo;
+
 //    @Value("${url.instagram.get-post-details}")
 //    private String postDetails;
 }

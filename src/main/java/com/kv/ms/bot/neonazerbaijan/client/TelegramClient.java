@@ -1,6 +1,7 @@
 package com.kv.ms.bot.neonazerbaijan.client;
 
 import com.kv.ms.bot.neonazerbaijan.client.request.TelegramSendPhotoRequest;
+import com.kv.ms.bot.neonazerbaijan.client.request.TelegramSendVideoRequest;
 import com.kv.ms.bot.neonazerbaijan.config.ApplicationProperty;
 import com.kv.ms.bot.neonazerbaijan.config.UrlConfig;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ public class TelegramClient {
     private final UrlConfig urlConfig;
     private final ApplicationProperty applicationProperty;
 
-    public void sendMedia(String photoUrl, String caption) {
+    public void sendPhoto(String photoUrl, String caption) {
 
         var response = restClient.post(
                 String.format(
@@ -26,6 +27,23 @@ public class TelegramClient {
                 TelegramSendPhotoRequest.builder()
                         .chatId(applicationProperty.getChatId())
                         .photo(photoUrl)
+                        .caption(caption)
+                        .build(),
+                Void.class
+        );
+        logger.info("RESPONSE from telegram-api: {}", response);
+    }
+
+    public void sendVideo(String videoUrl, String caption) {
+
+        var response = restClient.post(
+                String.format(
+                        urlConfig.getSendVideo(),
+                        applicationProperty.getTelegramToken()
+                ),
+                TelegramSendVideoRequest.builder()
+                        .chatId(applicationProperty.getChatId())
+                        .video(videoUrl)
                         .caption(caption)
                         .build(),
                 Void.class
