@@ -1,6 +1,7 @@
 package com.kv.ms.bot.neonazerbaijan.model.mapper;
 
 
+import com.kv.ms.bot.neonazerbaijan.client.response.Data;
 import com.kv.ms.bot.neonazerbaijan.dao.entity.PostEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -15,7 +16,8 @@ public interface PostMapper {
 
     @Mappings({
             @Mapping(target = "postId", source = "id"),
+            @Mapping(target = "isPublished", constant = "true"),
             @Mapping(target = "profileId", constant = "5362713430462517")
     })
-    PostEntity toEntity(String id);
+    PostEntity toEntity(Data data);
 }
