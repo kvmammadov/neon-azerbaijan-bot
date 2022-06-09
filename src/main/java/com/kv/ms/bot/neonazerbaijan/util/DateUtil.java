@@ -24,7 +24,7 @@ public class DateUtil {
     @SneakyThrows
     public static boolean isMoreThanNHours(Long n) {
         var HOURS = MILLIS_PER_N_HOURS * n;
-        return Math.abs(getCurrentDate().getTime() - lastPublishingDate.getTime()) > HOURS;
+        return Math.abs(getCurrentDate().getTime() - lastPublishingDate.getTime()) >= HOURS;
     }
 
     @SneakyThrows

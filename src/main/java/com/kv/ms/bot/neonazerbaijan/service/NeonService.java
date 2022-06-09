@@ -2,7 +2,6 @@ package com.kv.ms.bot.neonazerbaijan.service;
 
 import com.kv.ms.bot.neonazerbaijan.client.InstagramClient;
 import com.kv.ms.bot.neonazerbaijan.client.TelegramClient;
-import com.kv.ms.bot.neonazerbaijan.client.response.Data;
 import com.kv.ms.bot.neonazerbaijan.config.ApplicationProperty;
 import com.kv.ms.bot.neonazerbaijan.dao.repository.PostsRepository;
 import com.kv.ms.bot.neonazerbaijan.exception.AllPostsIsPublishedException;
@@ -29,20 +28,32 @@ public class NeonService {
     private final ApplicationProperty applicationProperty;
     private Integer counter = 0;
 
-    @Scheduled(cron = "@hourly")
-    @SneakyThrows
-    public void publishPost() {
+    @Scheduled(cron = "0 0/10 * * * *")
+    private void checkTheLastPostIdExistInDb() {
 
         var postDetails = instagramClient.getLatestPostId().getData().get(0);
-        var postId = postDetails.getId();
-        var mediaType = postDetails.getMediaType();
 
-        checkTheLastPostIdExistInDb(postDetails);
+        if (!postsRepository.existsByPostId(postDetails.getId())) {
+            postsRepository.save(PostMapper.INSTANCE.toEntity(
+                    postDetails,
+                    false,
+                    applicationProperty.getProfileId()));
+            logger.info("Detected and saved new post with id {}", postDetails.getId());
+        }
+    }
 
-        if (isMoreThanNHours(3L)) { //TODO may me refactor code
+    @SneakyThrows
+    @Scheduled(cron = "@hourly")
+    public void publishPost() {
+
+        if (isMoreThanNHours(3L)) { //TODO may be refactor code
             DateUtil.lastPublishingDate = getCurrentDate();
 
-            if (!postsRepository.existsByPostId(postId)) {
+            var postDetails = instagramClient.getLatestPostId().getData().get(0);
+            var mediaId = postDetails.getId();
+            var mediaType = postDetails.getMediaType();
+
+            if (!postsRepository.existsByPostId(mediaId)) {
                 logger.info("Post cannot be find in DB");
 
                 if (mediaType.equalsIgnoreCase(VIDEO))
@@ -57,7 +68,7 @@ public class NeonService {
                 return;
             }
 
-            logger.info("Post with id: {} exists in DB", postId);
+            logger.info("Post with id: {} exists in DB", mediaId);
 
             var archivedPost = postsRepository.findLastPostIdWherePublishedIsFalse()
                     .orElseThrow(AllPostsIsPublishedException::new);
@@ -73,23 +84,11 @@ public class NeonService {
         logger.info("Last post publish time is {}", DateUtil.lastPublishingDate);
     }
 
-    private void checkTheLastPostIdExistInDb(Data postDetails) {
-        if (!postsRepository.existsByPostId(postDetails.getId())) {
-            postsRepository.save(PostMapper.INSTANCE.toEntity(
-                    postDetails,
-                    false,
-                    applicationProperty.getProfileId()));
-            logger.info("Detected and saved new post with id {}", postDetails.getId());
-        }
-    }
-
     public void fillTable(String next) {
-
         if (next == null) {
             System.out.println(counter);
             return;
         }
-
         var response = instagramClient.getNextPostId(next);
         response.getData().forEach(
                 data -> {
