@@ -10,16 +10,16 @@ public class DateUtil {
 
     private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private final static long MILLIS_PER_N_HOURS = 60 * 60 * 1000L;
-    public static Date lastPublishingDate;
+    public static Date lastPublishingDate = getCurrentDate();
 
-    static {
-        try {
-            String lastPublishingDate_OLD = "2022-06-07 10:00:59";
-            lastPublishingDate = sdf.parse(lastPublishingDate_OLD);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-    }
+//    static { //TODO get the current date automatically
+//        try {
+//            String lastPublishingDate_OLD = "2022-06-10 09:00:00";
+//            lastPublishingDate = sdf.parse(lastPublishingDate_OLD);
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     @SneakyThrows
     public static boolean isMoreThanNHours(Long n) {

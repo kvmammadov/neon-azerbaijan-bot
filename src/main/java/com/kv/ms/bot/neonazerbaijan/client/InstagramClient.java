@@ -17,8 +17,7 @@ public class InstagramClient {
     private final ApplicationProperty applicationProperty;
 
     public PostIdResponse getLatestPostId() {
-
-        var response = restClient.getForObject(
+        return restClient.getForObject(
                 String.format(
                         urlConfig.getLatestPostDetails(),
                         applicationProperty.getProfileId(),
@@ -27,34 +26,14 @@ public class InstagramClient {
                 ),
                 PostIdResponse.class
         );
-        logger.info("RESPONSE from instagram-api: {}", response);
-        return response;
-    }
-
-    public PostIdResponse getNextPostId() {
-
-        var response = restClient.getForObject(
-                String.format(
-                        urlConfig.getAllPostsDetails(),
-                        applicationProperty.getProfileId(),
-                        applicationProperty.getFields(),
-                        applicationProperty.getAccessToken()
-                ),
-                PostIdResponse.class
-        );
-        logger.info("RESPONSE from instagram-api: {}", response);
-        return response;
+        //logger.info("RESPONSE from instagram-api: {}", response);
     }
 
     public PostIdResponse getNextPostId(String nextValue) {
-
-        logger.info("GET request to {}", nextValue);
-
-        var response = restClient.getForObject(
+        return restClient.getForObject(
                 nextValue,
                 PostIdResponse.class
         );
-        logger.info("RESPONSE from instagram-api: {}", response);
-        return response;
+        //logger.info("RESPONSE from instagram-api: {}", response);
     }
 }
