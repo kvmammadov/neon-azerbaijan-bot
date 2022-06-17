@@ -2,8 +2,8 @@ package com.kv.ms.bot.neonazerbaijan.service;
 
 import com.kv.ms.bot.neonazerbaijan.client.InstagramClient;
 import com.kv.ms.bot.neonazerbaijan.client.TelegramClient;
+import com.kv.ms.bot.neonazerbaijan.client.response.Data;
 import com.kv.ms.bot.neonazerbaijan.config.ApplicationProperty;
-import com.kv.ms.bot.neonazerbaijan.dao.entity.PostEntity;
 import com.kv.ms.bot.neonazerbaijan.dao.repository.PostsRepository;
 import com.kv.ms.bot.neonazerbaijan.exception.AllPostsArePublishedException;
 import com.kv.ms.bot.neonazerbaijan.model.mapper.PostMapper;
@@ -39,6 +39,7 @@ public class NeonService {
     @Scheduled(cron = "0 0/10 * * * *")
     private void checkTheLastPostIdExistInDb() {
 
+        logger.info("--------------------------------------");
         logger.info("Checking for new posts");
         var postDetails = instagramClient.getLatestPostId().getData().get(0);
 
@@ -49,39 +50,52 @@ public class NeonService {
                     applicationProperty.getProfileId()));
             logger.info("Detected and saved new post with id {}", postDetails.getId());
         }
+        logger.info("--------------------------------------");
     }
 
+
+    //    @Scheduled(cron = "0 * * * * *")
     @SneakyThrows
     @Scheduled(cron = "@hourly")
     public void publishPost() {
+
+        logger.info("--------------------------------------");
+
         if (isMoreThanNHours(3L)) {
+
             var archivedPost = postsRepository.findLastPostIdWherePublishedIsFalse()
                     .orElseThrow(AllPostsArePublishedException::new);
-            sendMediaToTelegram(archivedPost);
-            postsRepository.save(archivedPost.setIsPublished(true));
+
+            try {
+                sendMediaToTelegram(instagramClient.getPostIdDetails(archivedPost.getPostId()));
+            } catch (HttpClientErrorException exception) {
+                logger.info("Exception when trying sending request: {}", exception.getMessage());
+            }
+            finally {
+                postsRepository.save(archivedPost.setIsPublished(true));
+            }
             logger.info("Last post publish time is {}", DateUtil.lastPublishingDate);
         }
+
+        logger.info("--------------------------------------");
     }
 
     @SneakyThrows
-    private void sendMediaToTelegram(PostEntity archivedPost) {
-        try {
-            logger.info("Sending post with id {}", archivedPost.getPostId());
-            if (archivedPost.getMediaType().equalsIgnoreCase(VIDEO)) {
-                telegramClient.sendVideo(archivedPost.getMediaUrl(), archivedPost.getCaption());
-            } else
-                telegramClient.sendPhoto(archivedPost.getMediaUrl(), archivedPost.getCaption());
-        } catch (HttpClientErrorException exception) {
-            logger.info("Exception when trying sending request: {}", exception.getMessage());
-        }
+    private void sendMediaToTelegram(Data archivedPostDetails) {
+        logger.info("Sending post with id {}", archivedPostDetails.getId());
+        if (archivedPostDetails.getMediaType().equalsIgnoreCase(VIDEO)) {
+            telegramClient.sendVideo(archivedPostDetails.getMediaUrl(), archivedPostDetails.getCaption());
+        } else
+            telegramClient.sendPhoto(archivedPostDetails.getMediaUrl(), archivedPostDetails.getCaption());
     }
 
-
     public void fillTable(String next) {
+
         if (next == null) {
             System.out.println(postsCount);
             return;
         }
+
         var response = instagramClient.getNextPostId(next);
         response.getData().forEach(
                 data -> {

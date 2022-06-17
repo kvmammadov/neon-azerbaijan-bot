@@ -2,6 +2,7 @@ package com.kv.ms.bot.neonazerbaijan.client;
 
 import com.kv.ms.bot.neonazerbaijan.client.request.TelegramSendPhotoRequest;
 import com.kv.ms.bot.neonazerbaijan.client.request.TelegramSendVideoRequest;
+import com.kv.ms.bot.neonazerbaijan.client.response.Data;
 import com.kv.ms.bot.neonazerbaijan.config.ApplicationProperty;
 import com.kv.ms.bot.neonazerbaijan.config.UrlConfig;
 import lombok.RequiredArgsConstructor;

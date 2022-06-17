@@ -25,15 +25,6 @@ public class PostEntity {
     @Column(name = "post_id", unique = true, nullable = false)
     private String postId;
 
-    @Column(name = "media_type")
-    private String mediaType;
-
-    @Column(name = "media_url", length = 2048)
-    private String mediaUrl;
-
-    @Column(name = "caption", length = 2048)
-    private String caption;
-
     @Column(name = "is_published")
     private Boolean isPublished = false;
 

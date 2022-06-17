@@ -1,5 +1,6 @@
 package com.kv.ms.bot.neonazerbaijan.client;
 
+import com.kv.ms.bot.neonazerbaijan.client.response.Data;
 import com.kv.ms.bot.neonazerbaijan.client.response.PostIdResponse;
 import com.kv.ms.bot.neonazerbaijan.config.ApplicationProperty;
 import com.kv.ms.bot.neonazerbaijan.config.UrlConfig;
@@ -27,6 +28,20 @@ public class InstagramClient {
                 PostIdResponse.class
         );
         //logger.info("RESPONSE from instagram-api: {}", response);
+    }
+
+    public Data getPostIdDetails(String postId) {
+        var response = restClient.get(
+                String.format(
+                        urlConfig.getActualPostIdDetails(),
+                        postId,
+                        applicationProperty.getFields(),
+                        applicationProperty.getAccessToken()),
+                Data.class
+        ).getBody();
+
+        logger.info("RESPONSE from telegram-api: {}", response);
+        return response;
     }
 
     public PostIdResponse getNextPostId(String nextValue) {

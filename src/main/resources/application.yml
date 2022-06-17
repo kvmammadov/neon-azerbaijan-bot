@@ -5,6 +5,7 @@ url:
   instagram:
     get-latest-post-details: https://graph.instagram.com/%s/media?fields=%s&access_token=%s&limit=1
     get-all-posts-details: https://graph.instagram.com/%s/media?fields=%s&access_token=%s&limit=100
+    get-post-id-details: https://graph.instagram.com/%s?fields=%s&access_token=%s
   telegram:
     send-photo: https://api.telegram.org/bot%s/sendPhoto
     send-video: https://api.telegram.org/bot%s/sendVideo

@@ -21,6 +21,9 @@ public class UrlConfig {
     @Value("${url.telegram.send-video}")
     private String sendVideo;
 
+    @Value("${url.instagram.get-post-id-details}")
+    private String actualPostIdDetails;
+
 //    @Value("${url.instagram.get-post-details}")
 //    private String postDetails;
 }
