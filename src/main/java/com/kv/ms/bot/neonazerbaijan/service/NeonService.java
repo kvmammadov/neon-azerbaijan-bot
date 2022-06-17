@@ -5,7 +5,7 @@ import com.kv.ms.bot.neonazerbaijan.client.TelegramClient;
 import com.kv.ms.bot.neonazerbaijan.config.ApplicationProperty;
 import com.kv.ms.bot.neonazerbaijan.dao.entity.PostEntity;
 import com.kv.ms.bot.neonazerbaijan.dao.repository.PostsRepository;
-import com.kv.ms.bot.neonazerbaijan.exception.AllPostsIsPublishedException;
+import com.kv.ms.bot.neonazerbaijan.exception.AllPostsArePublishedException;
 import com.kv.ms.bot.neonazerbaijan.model.mapper.PostMapper;
 import com.kv.ms.bot.neonazerbaijan.util.DateUtil;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+
+import javax.annotation.PostConstruct;
 
 import static com.kv.ms.bot.neonazerbaijan.model.consts.MediaTypes.VIDEO;
 import static com.kv.ms.bot.neonazerbaijan.util.DateUtil.isMoreThanNHours;
@@ -28,6 +30,11 @@ public class NeonService {
     private final PostsRepository postsRepository;
     private final ApplicationProperty applicationProperty;
     private Integer postsCount = 0;
+
+    @PostConstruct
+    private void consoleLastPostingDate() {
+        logger.info("Default post publishing time is {}", DateUtil.lastPublishingDate);
+    }
 
     @Scheduled(cron = "0 0/10 * * * *")
     private void checkTheLastPostIdExistInDb() {
@@ -47,32 +54,28 @@ public class NeonService {
     @SneakyThrows
     @Scheduled(cron = "@hourly")
     public void publishPost() {
-        if (isMoreThanNHours(1L)) {
+        if (isMoreThanNHours(3L)) {
             var archivedPost = postsRepository.findLastPostIdWherePublishedIsFalse()
-                    .orElseThrow(AllPostsIsPublishedException::new);
-
-            while (!sendMediaToTelegram(archivedPost)) sendMediaToTelegram(archivedPost);
-
+                    .orElseThrow(AllPostsArePublishedException::new);
+            sendMediaToTelegram(archivedPost);
             postsRepository.save(archivedPost.setIsPublished(true));
             logger.info("Last post publish time is {}", DateUtil.lastPublishingDate);
         }
     }
 
-    private boolean sendMediaToTelegram(PostEntity archivedPost) {
-
-        boolean isSent = false;
-
+    @SneakyThrows
+    private void sendMediaToTelegram(PostEntity archivedPost) {
         try {
-            if (archivedPost.getMediaType().equalsIgnoreCase(VIDEO))
+            logger.info("Sending post with id {}", archivedPost.getPostId());
+            if (archivedPost.getMediaType().equalsIgnoreCase(VIDEO)) {
                 telegramClient.sendVideo(archivedPost.getMediaUrl(), archivedPost.getCaption());
-            else
+            } else
                 telegramClient.sendPhoto(archivedPost.getMediaUrl(), archivedPost.getCaption());
-            isSent = true;
         } catch (HttpClientErrorException exception) {
-            logger.info("Exception when trying sending request{}", exception.getMessage());
+            logger.info("Exception when trying sending request: {}", exception.getMessage());
         }
-        return isSent;
     }
+
 
     public void fillTable(String next) {
         if (next == null) {
