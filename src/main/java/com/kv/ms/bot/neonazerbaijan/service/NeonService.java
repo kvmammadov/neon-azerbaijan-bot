@@ -4,6 +4,7 @@ import com.kv.ms.bot.neonazerbaijan.client.InstagramClient;
 import com.kv.ms.bot.neonazerbaijan.client.TelegramClient;
 import com.kv.ms.bot.neonazerbaijan.client.response.Data;
 import com.kv.ms.bot.neonazerbaijan.config.ApplicationProperty;
+import com.kv.ms.bot.neonazerbaijan.dao.entity.PostEntity;
 import com.kv.ms.bot.neonazerbaijan.dao.repository.PostsRepository;
 import com.kv.ms.bot.neonazerbaijan.exception.AllPostsArePublishedException;
 import com.kv.ms.bot.neonazerbaijan.model.mapper.PostMapper;
@@ -18,6 +19,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import javax.annotation.PostConstruct;
 
 import static com.kv.ms.bot.neonazerbaijan.model.consts.MediaTypes.VIDEO;
+import static com.kv.ms.bot.neonazerbaijan.model.consts.PublishingStatus.ERROR;
+import static com.kv.ms.bot.neonazerbaijan.model.consts.PublishingStatus.OK;
 import static com.kv.ms.bot.neonazerbaijan.util.DateUtil.isMoreThanNHours;
 
 @Slf4j
@@ -59,8 +62,6 @@ public class NeonService {
     @Scheduled(cron = "@hourly")
     public void publishPost() {
 
-        logger.info("--------------------------------------");
-
         if (isMoreThanNHours(3L)) {
 
             var archivedPost = postsRepository.findLastPostIdWherePublishedIsFalse()
@@ -68,19 +69,22 @@ public class NeonService {
 
             try {
                 sendMediaToTelegram(instagramClient.getPostIdDetails(archivedPost.getPostId()));
+                insertDb(archivedPost, true, OK);
             } catch (HttpClientErrorException exception) {
                 logger.info("Exception when trying sending request: {}", exception.getMessage());
+                insertDb(archivedPost, false, ERROR + ": " + exception.getMessage());
             }
-            finally {
-                postsRepository.save(archivedPost.setIsPublished(true));
-            }
+
             logger.info("Last post publish time is {}", DateUtil.lastPublishingDate);
         }
-
-        logger.info("--------------------------------------");
     }
 
-    @SneakyThrows
+    private void insertDb(PostEntity archivedPost, Boolean isPublished, String publishingStatus) {
+        archivedPost.setIsPublished(isPublished);
+        archivedPost.setPublishingStatus(publishingStatus);
+        postsRepository.save(archivedPost);
+    }
+
     private void sendMediaToTelegram(Data archivedPostDetails) {
         logger.info("Sending post with id {}", archivedPostDetails.getId());
         if (archivedPostDetails.getMediaType().equalsIgnoreCase(VIDEO)) {

@@ -13,6 +13,9 @@ public interface PostsRepository extends JpaRepository<PostEntity, Long> {
     Boolean existsByPostId(String postId);
 
     @Query(nativeQuery = true,
-            value = "SELECT * FROM POSTS p WHERE p.is_published = FALSE ORDER BY p.id DESC LIMIT 1")
+            value = "SELECT * FROM POSTS p WHERE p.is_published = FALSE " +
+                    "AND p.publishing_status LIKE 'OK' " +
+                    "ORDER BY p.id DESC " +
+                    "LIMIT 1")
     Optional<PostEntity> findLastPostIdWherePublishedIsFalse();
 }

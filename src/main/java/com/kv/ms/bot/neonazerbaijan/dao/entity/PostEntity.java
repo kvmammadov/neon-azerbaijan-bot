@@ -28,6 +28,9 @@ public class PostEntity {
     @Column(name = "is_published")
     private Boolean isPublished = false;
 
+    @Column(name = "publishing_status")
+    private String publishingStatus;
+
     @Column(name = "profile_id", nullable = false)
     private String profileId;
 
@@ -38,8 +41,8 @@ public class PostEntity {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
 }
+
 //    public static PostEntity of(String postId, String mediaType, String mediaUrl,
 //                                String caption, Boolean isPublished, String profileId) {
 //        return new PostEntity()
