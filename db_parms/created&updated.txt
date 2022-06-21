@@ -1,0 +1,2 @@
+UPDATE public.posts
+SET created_at=now(), updated_at=now()

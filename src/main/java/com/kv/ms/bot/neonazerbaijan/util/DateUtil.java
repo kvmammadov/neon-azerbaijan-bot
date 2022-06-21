@@ -11,7 +11,6 @@ import java.util.Date;
 public class DateUtil {
 
     private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    //    private final static long MILLIS_PER_N_HOURS = 6 * 10 * 1000L;
     private final static Long MILLIS_PER_N_HOURS = 60 * 60 * 1000L;
     public static Date lastPublishingDate = getCurrentDate();
 

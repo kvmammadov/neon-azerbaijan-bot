@@ -21,6 +21,7 @@ import javax.annotation.PostConstruct;
 import static com.kv.ms.bot.neonazerbaijan.model.consts.MediaTypes.VIDEO;
 import static com.kv.ms.bot.neonazerbaijan.model.consts.PublishingStatus.ERROR;
 import static com.kv.ms.bot.neonazerbaijan.model.consts.PublishingStatus.OK;
+import static com.kv.ms.bot.neonazerbaijan.util.DateUtil.getCurrentDate;
 import static com.kv.ms.bot.neonazerbaijan.util.DateUtil.isMoreThanNHours;
 
 @Slf4j
@@ -70,9 +71,10 @@ public class NeonService {
             try {
                 sendMediaToTelegram(instagramClient.getPostIdDetails(archivedPost.getPostId()));
                 insertDb(archivedPost, true, OK);
+                DateUtil.lastPublishingDate = getCurrentDate();
             } catch (HttpClientErrorException exception) {
                 logger.info("Exception when trying sending request: {}", exception.getMessage());
-                insertDb(archivedPost, false, ERROR + ": " + exception.getMessage());
+                insertDb(archivedPost, null, ERROR + ": " + exception.getMessage());
             }
 
             logger.info("Last post publish time is {}", DateUtil.lastPublishingDate);
